@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,6 +48,7 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
     private SimpleItemRecyclerViewAdapter notesAdapter;
     private List<List<NoteDTO>> allGroupsNotes;
     private List<NoteDTO> currentShowingNotes;
+    private int positionCurrentShowingNotes;
     private DbManager dbManager;
     private TabLayout tabLayout;
     private RecyclerView showerCurrentNotes;
@@ -122,6 +124,7 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                positionCurrentShowingNotes = tab.getPosition();
                 notesAdapter.setValues(currentShowingNotes = allGroupsNotes.get(tab.getPosition()));
                 if (currentShowingNotes.size() > 0) {
                     if (currentMachineIsTablet) {
@@ -148,7 +151,7 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
             @Override
             public void onClick(View view) {
                 NoteDTO sendNote = new NoteDTO();
-                sendNote.setType(defaultTypes[allGroupsNotes.indexOf(currentShowingNotes)]);
+                sendNote.setType(defaultTypes[positionCurrentShowingNotes]);
                 startActivityForResult(new Intent(ItemListActivityMain.this, CreateChangeNoteActivity.class)
                         .putExtra(SENT_ALL_ANOTHER_TYPES_KEY, allTypesNotes)
                         .putExtra(CODE_WORK_WITH_NOTE, CREATE_NOTE_CODE)
@@ -228,7 +231,6 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
 
     @Override
     public void onDeleteTypesSimpleGroup(String group) {
-        //todo
         boolean isDefaultType = false;
         for (int i = 0; i < defaultTypes.length; i++) {
             if (defaultTypes[i].equals(group)) {

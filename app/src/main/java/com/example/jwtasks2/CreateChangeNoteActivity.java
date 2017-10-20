@@ -44,7 +44,6 @@ public class CreateChangeNoteActivity extends AppCompatActivity implements Dialo
         btnDate.setText(Utils.getStringFromDateStart(currentNote.getDate()));
         btnTime = (Button) findViewById(R.id.btn_time);
         btnTime.setText(Utils.getStringFromDateEnd(currentNote.getDate()));
-//        btnType.setText(currentNote.getType());
 
         ((EditText) findViewById(R.id.output_description_activity_create)).setText(currentNote.getDescription());
         allTypesAnotherNotes = getIntent().getExtras().getStringArrayList(ItemListActivityMain.SENT_ALL_ANOTHER_TYPES_KEY);
@@ -60,7 +59,7 @@ public class CreateChangeNoteActivity extends AppCompatActivity implements Dialo
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
-        showerCustomTypes.setSelection(allTypesAnotherNotes.indexOf(currentNote.getType()));
+            showerCustomTypes.setSelection(allTypesAnotherNotes.indexOf(currentNote.getType()));
     }
 
     public void onClickForTaskButtons(View view) {
