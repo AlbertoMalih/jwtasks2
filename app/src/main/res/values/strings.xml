@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">jw notes 2</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="date">date</string>
+    <string name="time">time</string>
+    <string name="type">type</string>
+    <string name="create">create</string>
+    <string name="back">back</string>
+    <string name="createTypeNote">create custom type</string>
+    <string name="delete_all_notes_str">delete all notes</string>
+    <string name="choose_type_delete">choose type delete</string>
+    <string name="delete_notes_from_writing_group_str">delete notes from writing group</string>
+
+    <array name="default_types">
+        <item>another</item>
+        <item>preaching</item>
+        <item>theocratic</item>
+        <item>homes</item>
+        <item>repeats</item>
+        <item>bible study</item>
+        <item>theocratic events</item>
+    </array>
+    <array name="default_types_def_lang">
+        <item>another</item>
+        <item>preaching</item>
+        <item>theocratic</item>
+        <item>homes</item>
+        <item>repeats</item>
+        <item>bible study</item>
+        <item>theocratic events</item>
+    </array>
+
+
+</resources>

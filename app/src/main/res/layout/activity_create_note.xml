@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <EditText
+        android:id="@+id/output_description_activity_create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="description"/>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickForTaskButtons"
+            android:text="@string/date" />
+
+        <Button
+            android:id="@+id/btn_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickForTaskButtons"
+            android:text="@string/time" />
+
+        <Button
+            android:id="@+id/btn_create_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickForTaskButtons"
+            android:text="@string/type" />
+
+    </TableRow>
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/types_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="44dp">
+
+        <Button
+            android:id="@+id/btn_create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickForTaskButtons"
+            android:text="@string/create" />
+
+    </TableRow>
+
+</LinearLayout>

@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">jw notes 2</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="date">дата</string>
+    <string name="time">время</string>
+    <string name="type">тип</string>
+    <string name="create">создать</string>
+    <string name="back">назад</string>
+    <string name="createTypeNote">создать тип</string>
+    <string name="delete_all_notes_str">удалить все заметки</string>
+    <string name="choose_type_delete">выбрать тип удаления</string>
+    <string name="delete_notes_from_writing_group_str">удалить заметки из введенной групы</string>
+
+    <array name="default_types">
+        <item>другие</item>
+        <item>проповедь</item>
+        <item>духовное</item>
+        <item>дома</item>
+        <item>повторы</item>
+        <item>изучение библии</item>
+        <item>теократические мероприятия</item>
+    </array>
+</resources>
