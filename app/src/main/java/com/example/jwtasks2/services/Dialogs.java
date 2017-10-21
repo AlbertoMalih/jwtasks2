@@ -55,7 +55,7 @@ public class Dialogs {
 
     public static void showCreateType(CreateChangeNoteActivity activityThis, final OnCreateTypeListener listenerTypeCreate) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activityThis);
-        builder.setTitle(activityThis.getString(R.string.type));
+        builder.setTitle(activityThis.getString(R.string.create_type));
 
         builder.setView(View.inflate(activityThis, R.layout.dialog_create_custom_type, null));
         builder.setPositiveButton(R.string.create_type,
