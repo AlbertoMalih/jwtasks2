@@ -3,13 +3,14 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="date">дата</string>
     <string name="time">время</string>
-    <string name="type">тип</string>
+    <string name="create_type">создать тип</string>
     <string name="create">создать</string>
     <string name="back">назад</string>
-    <string name="createTypeNote">создать тип</string>
     <string name="delete_all_notes_str">удалить все заметки</string>
     <string name="choose_type_delete">выбрать тип удаления</string>
     <string name="delete_notes_from_writing_group_str">удалить заметки из введенной групы</string>
+    <string name="delete_all_str">удалить все</string>
+    <string name="select_type_sort_str">выбрать тип сортировки</string>
 
 
     <array name="types_comparators">

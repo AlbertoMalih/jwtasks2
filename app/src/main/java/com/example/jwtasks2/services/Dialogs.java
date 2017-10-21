@@ -58,7 +58,7 @@ public class Dialogs {
         builder.setTitle(activityThis.getString(R.string.type));
 
         builder.setView(View.inflate(activityThis, R.layout.dialog_create_custom_type, null));
-        builder.setPositiveButton(R.string.createTypeNote,
+        builder.setPositiveButton(R.string.create_type,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -90,7 +90,7 @@ public class Dialogs {
 
     public static void showChooseComparator(final Activity activityThis, int selectedId, final OnSelectedComparatorListener onSelectedComparatorListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activityThis);
-        builder.setTitle(activityThis.getString(R.string.choose_comparator_for_sort));
+        builder.setTitle(activityThis.getString(R.string.select_type_sort_str));
         builder.setSingleChoiceItems(R.array.types_comparators, selectedId, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int item) {
