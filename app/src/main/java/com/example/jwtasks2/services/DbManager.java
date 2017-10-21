@@ -4,7 +4,6 @@ package com.example.jwtasks2.services;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
@@ -29,13 +28,11 @@ public class DbManager extends SQLiteOpenHelper {
     private static final String NOTES_COLUMN_TYPE = "type";
 
     private ArrayList<String> allAnotherTypesNotes;
-    private Context context;
     private String[] defaultTypes;
     private String[] defaultTypesDefLang;
 
     public DbManager(Context context) {
         super(context, DATABASE_NAME, null, 1);
-        this.context = context;
         defaultTypes = ItemListActivityMain.getDefaultTypes();
         defaultTypesDefLang = ItemListActivityMain.getDefaultTypesDefLang();
     }
@@ -65,13 +62,13 @@ public class DbManager extends SQLiteOpenHelper {
         db.close();
         return true;
     }
-
-    public long numberOfRows() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        long numRows = DatabaseUtils.queryNumEntries(db, NOTES_TABLE_NAME);
-        db.close();
-        return numRows;
-    }
+//
+//    public long numberOfRows() {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        long numRows = DatabaseUtils.queryNumEntries(db, NOTES_TABLE_NAME);
+//        db.close();
+//        return numRows;
+//    }
 
     public boolean updateNote(NoteDTO note) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -94,14 +91,14 @@ public class DbManager extends SQLiteOpenHelper {
     }
 
 
-    public int deleteAllNotes() {
+    int deleteAllNotes() {
         SQLiteDatabase db = this.getWritableDatabase();
         int sizeDeletingElements = db.delete(NOTES_TABLE_NAME, null, null);
         db.close();
         return sizeDeletingElements;
     }
 
-    public int deleteAllNotesInSimpleGroup(String group) {
+    int deleteAllNotesInSimpleGroup(String group) {
         SQLiteDatabase db = this.getWritableDatabase();
         int sizeDeletingElements = db.delete(NOTES_TABLE_NAME, NOTES_COLUMN_TYPE + " = ?", new String[]{group});
         db.close();
@@ -157,10 +154,10 @@ public class DbManager extends SQLiteOpenHelper {
         return allAnotherTypesNotes;
     }
 
-    public class RequestAllUsers extends AsyncTask<Void, Void, List<List<NoteDTO>>> {
+    private class RequestAllUsers extends AsyncTask<Void, Void, List<List<NoteDTO>>> {
         private OnGetAllDataListener onGetAllDataListener;
 
-        public RequestAllUsers(OnGetAllDataListener onGetAllDataListener) {
+        RequestAllUsers(OnGetAllDataListener onGetAllDataListener) {
             this.onGetAllDataListener = onGetAllDataListener;
         }
 

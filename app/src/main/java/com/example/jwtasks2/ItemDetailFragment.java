@@ -12,9 +12,6 @@ import com.example.jwtasks2.model.NoteDTO;
 import com.example.jwtasks2.services.Utils;
 
 public class ItemDetailFragment extends Fragment {
-    public static final String ARG_ITEM_ID = "item_id";
-
-    private NoteDTO showingNoteItem;
 
     public ItemDetailFragment() {
     }
@@ -35,7 +32,7 @@ public class ItemDetailFragment extends Fragment {
         if (getArguments() == null) {
             return;
         }
-        showingNoteItem = getArguments().getParcelable(ItemListActivityMain.SHOWING_ELEMENT);
+        NoteDTO showingNoteItem = getArguments().getParcelable(ItemListActivityMain.SHOWING_ELEMENT);
         ((TextView) getView().findViewById(R.id.detail_output_date)).setText(Utils.getStringFromDateStart(showingNoteItem.getDate()));
         ((TextView) getView().findViewById(R.id.detail_output_description)).setText(showingNoteItem.getDescription());
         ((TextView) getView().findViewById(R.id.detail_output_type)).setText(showingNoteItem.getType());

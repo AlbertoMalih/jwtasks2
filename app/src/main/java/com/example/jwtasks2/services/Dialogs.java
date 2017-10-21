@@ -21,10 +21,6 @@ import com.example.jwtasks2.R;
 
 import java.util.Calendar;
 
-/**
- * Created by Олег on 16.10.2017.
- */
-
 public class Dialogs {
 
     public static void showChooseDeleteAllNotes(Activity activityThis, final DbManager dbManager, final OnDeleteTypesListener listenerTypeDelete ) {
@@ -145,7 +141,7 @@ public class Dialogs {
         }
     }
 
-    public static interface OnCreateTypeListener{
+    public interface OnCreateTypeListener{
         void onTypeCreated(String type);
     }
 

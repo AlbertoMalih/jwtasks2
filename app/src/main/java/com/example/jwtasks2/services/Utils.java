@@ -1,33 +1,18 @@
 package com.example.jwtasks2.services;
 
-import android.content.Context;
-
 import com.example.jwtasks2.ItemListActivityMain;
 import com.example.jwtasks2.model.NoteDTO;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static com.example.jwtasks2.ItemListActivityMain.ANOTHER_DATA_LIST;
-
-/**
- * Created by Олег on 16.10.2017.
- */
+import java.util.Locale;
 
 public class Utils {
-    private static DateFormat startDateFormatter = new SimpleDateFormat("yyyy:MM:dd");
-    private static DateFormat endDateFormatter = new SimpleDateFormat("HH:mm");
+    private static DateFormat startDateFormatter = new SimpleDateFormat("yyyy:MM:dd", Locale.getDefault());
+    private static DateFormat endDateFormatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-    public static CharSequence getStringResourceByName(Context c, String aString) {
-        int resId = c.getResources().getIdentifier(aString, "string", c.getPackageName());
-        if (resId < 1) {
-            return aString;
-        }
-        return c.getString(resId);
-    }
-
-    public static String getGroupNameForWorkWithDb(String groupName) {
+    static String getGroupNameForWorkWithDb(String groupName) {
         String[] defaultTypes = ItemListActivityMain.getDefaultTypes();
         String[] defaultTypesDefLang = ItemListActivityMain.getDefaultTypesDefLang();
         String result = groupName;
@@ -69,7 +54,7 @@ public class Utils {
     }
 
     public static String getStringFromDateAll(Date date) {
-        return new StringBuilder().append(getStringFromDateStart(date)).append(":::").append(getStringFromDateEnd(date)).toString();
+        return getStringFromDateStart(date) + ":::" + getStringFromDateEnd(date);
     }
 
     public static String getStringFromDateEnd(Date date) {

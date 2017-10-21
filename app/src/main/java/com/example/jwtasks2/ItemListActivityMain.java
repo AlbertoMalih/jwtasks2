@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,7 +53,7 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
     private RecyclerView showerCurrentNotes;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
         initNameTypes();
@@ -83,6 +82,70 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_CREATE_CHANGE_NOTE) {
+            if (resultCode == RESULT_OK) {
+                switch (data.getExtras().getInt(CODE_WORK_WITH_NOTE)) {
+                    case CREATE_NOTE_CODE:
+                        insertNote((NoteDTO) data.getExtras().getParcelable(CURRENT_NOTE_KEY));
+                        break;
+                    case UPDATE_NOTE_CODE:
+                        updateNote((NoteDTO) data.getParcelableExtra(CURRENT_NOTE_KEY), data.getIntExtra(POSITION_UPDATING_TASK, -1));
+                        break;
+                }
+                notesAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (dbManager != null) {
+            dbManager.close();
+        } else {
+            dbManager = null;
+        }
+    }
+
+
+    @Override
+    public void onDeleteAllTypes() {
+        for (List<NoteDTO> simpleGroupNotes : allGroupsNotes) {
+            simpleGroupNotes.clear();
+        }
+        notesAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDeleteTypesSimpleGroup(String group) {
+        boolean isDefaultType = false;
+        for (int i = 0; i < defaultTypes.length; i++) {
+            if (defaultTypes[i].equals(group)) {
+                isDefaultType = true;
+                allGroupsNotes.get(i).clear();
+            }
+        }
+
+        if (!isDefaultType) {
+            List<NoteDTO> anotherGroups = allGroupsNotes.get(ANOTHER_DATA_LIST);
+            for (int i = 0; i < anotherGroups.size(); i++) {
+                if (group.equals(anotherGroups.get(i).getType())) {
+                    anotherGroups.remove(i);
+                    i--;
+                }
+            }
+        }
+        notesAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return allGroupsNotes;
+    }
+
     private void initNameTypes() {
         Resources resources = getResources();
         defaultTypes = resources.getStringArray(R.array.default_types);
@@ -102,14 +165,9 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        for (int i = 0; i < defaultTypes.length; i++) {
-            tabLayout.addTab(tabLayout.newTab().setText(defaultTypes[i]));
+        for (String defaultType : defaultTypes) {
+            tabLayout.addTab(tabLayout.newTab().setText(defaultType));
         }
-    }
-
-    @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        return allGroupsNotes;
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView, List<NoteDTO> data) {
@@ -184,35 +242,6 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         notesAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_CREATE_CHANGE_NOTE) {
-            if (resultCode == RESULT_OK) {
-                switch (data.getExtras().getInt(CODE_WORK_WITH_NOTE)) {
-                    case CREATE_NOTE_CODE:
-                        insertNote((NoteDTO) data.getExtras().getParcelable(CURRENT_NOTE_KEY));
-                        break;
-                    case UPDATE_NOTE_CODE:
-                        updateNote((NoteDTO) data.getParcelableExtra(CURRENT_NOTE_KEY), data.getIntExtra(POSITION_UPDATING_TASK, -1));
-                        break;
-                }
-                notesAdapter.notifyDataSetChanged();
-            }
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (dbManager != null) {
-            dbManager.close();
-        } else {
-            dbManager = null;
-        }
-    }
-
-
     public static String[] getDefaultTypes() {
         return defaultTypes;
     }
@@ -221,43 +250,13 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         return defaultTypesDefLang;
     }
 
-    @Override
-    public void onDeleteAllTypes() {
-        for (List<NoteDTO> simpleGroupNotes : allGroupsNotes) {
-            simpleGroupNotes.clear();
-        }
-        notesAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onDeleteTypesSimpleGroup(String group) {
-        boolean isDefaultType = false;
-        for (int i = 0; i < defaultTypes.length; i++) {
-            if (defaultTypes[i].equals(group)) {
-                isDefaultType = true;
-                allGroupsNotes.get(i).clear();
-            }
-        }
-
-        if (!isDefaultType) {
-            List<NoteDTO> anotherGroups = allGroupsNotes.get(ANOTHER_DATA_LIST);
-            for (int i = 0; i < anotherGroups.size(); i++) {
-                if (group.equals(anotherGroups.get(i).getType())) {
-                    anotherGroups.remove(i);
-                    i--;
-                }
-            }
-        }
-        notesAdapter.notifyDataSetChanged();
-    }
-
 
     class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private List<NoteDTO> noteValues;
 
-        public SimpleItemRecyclerViewAdapter(List<NoteDTO> items) {
+        SimpleItemRecyclerViewAdapter(List<NoteDTO> items) {
             noteValues = items;
         }
 
@@ -321,7 +320,7 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
             });
         }
 
-        public void setValues(List<NoteDTO> mValues) {
+        void setValues(List<NoteDTO> mValues) {
             this.noteValues = mValues;
             notifyDataSetChanged();
         }
@@ -336,7 +335,7 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
             private View mView;
             private TextView noteDate;
 
-            public ViewHolder(View view) {
+            ViewHolder(View view) {
                 super(view);
                 mView = view;
                 noteDate = view.findViewById(R.id.content);
