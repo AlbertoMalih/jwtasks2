@@ -11,6 +11,13 @@
     <string name="choose_type_delete">выбрать тип удаления</string>
     <string name="delete_notes_from_writing_group_str">удалить заметки из введенной групы</string>
 
+
+    <array name="types_comparators">
+        <item>по дате</item>
+        <item>по типу</item>
+        <item>по описанию</item>
+    </array>
+
     <array name="default_types">
         <item>другие</item>
         <item>проповедь</item>

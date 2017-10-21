@@ -2,33 +2,42 @@ package com.example.jwtasks2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jwtasks2.model.NoteDTO;
+import com.example.jwtasks2.services.Comparators;
 import com.example.jwtasks2.services.DbManager;
 import com.example.jwtasks2.services.Dialogs;
 import com.example.jwtasks2.services.Utils;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.example.jwtasks2.CreateChangeNoteActivity.CREATE_NOTE_CODE;
 import static com.example.jwtasks2.CreateChangeNoteActivity.UPDATE_NOTE_CODE;
 
-public class ItemListActivityMain extends AppCompatActivity implements DbManager.OnGetAllDataListener, Dialogs.OnDeleteTypesListener {
+public class ItemListActivityMain extends AppCompatActivity implements Dialogs.OnSelectedComparatorListener, DbManager.OnGetAllDataListener, Dialogs.OnDeleteTypesListener {
     //todo add firebase database and auth
     public static final String SHOWING_ELEMENT = "SHOWING_ELEMENT";
     public static final String TAG = "JWTASKS_2_TAG";
@@ -38,12 +47,13 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
     public static final String CURRENT_NOTE_KEY = "CURRENT_NOTE_KEY";
     public static final String POSITION_UPDATING_TASK = "POSITION_UPDATING_TASK";
     public static final String CODE_WORK_WITH_NOTE = "function_code";
+    private static final String CODE_CURRENT_COMPATRATOR_FOR_PREFERENCES = "CODE_CURRENT_COMPATRATOR_FOR_PREFERENCES";
 
     private static String[] defaultTypes;
     private static String[] defaultTypesDefLang;
 
     private boolean currentMachineIsTablet;
-    private ArrayList<String> allTypesNotes;
+    private static ArrayList<String> allTypesNotes;
     private SimpleItemRecyclerViewAdapter notesAdapter;
     private List<List<NoteDTO>> allGroupsNotes;
     private List<NoteDTO> currentShowingNotes;
@@ -51,12 +61,16 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
     private DbManager dbManager;
     private TabLayout tabLayout;
     private RecyclerView showerCurrentNotes;
+    private SharedPreferences containerOfSettings;
+    private Comparator<NoteDTO> comparatorForSortNotes;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
         initNameTypes();
+        containerOfSettings = PreferenceManager.getDefaultSharedPreferences(this);
+        comparatorForSortNotes = Comparators.getComparatorOnId(containerOfSettings.getInt(CODE_CURRENT_COMPATRATOR_FOR_PREFERENCES, Comparators.DATE_COMPARATOR_CODE));
         dbManager = new DbManager(this.getApplicationContext());
         showerCurrentNotes = (RecyclerView) findViewById(R.id.item_list);
         if (findViewById(R.id.item_detail_container) != null) {
@@ -77,6 +91,9 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         switch (item.getItemId()) {
             case R.id.delete_all_main_menu:
                 Dialogs.showChooseDeleteAllNotes(this, dbManager, this);
+                break;
+            case R.id.select_comparator_main_menu:
+                Dialogs.showChooseComparator(this, Comparators.getIdOnComparator(comparatorForSortNotes), this);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -178,6 +195,7 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
     public void onResponseAllData(List<List<NoteDTO>> responseData) {
         allGroupsNotes = responseData;
         allTypesNotes = dbManager.getAllAnotherTypesNotes();
+        sortAllGroupsNotes();
         setupRecyclerView(showerCurrentNotes, allGroupsNotes.get(ANOTHER_DATA_LIST));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -218,6 +236,25 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         });
     }
 
+
+    @Override
+    public void onSelectedComparator(int idOfComparator) {
+        containerOfSettings.edit().putInt(CODE_CURRENT_COMPATRATOR_FOR_PREFERENCES, idOfComparator).apply();
+        comparatorForSortNotes = Comparators.getComparatorOnId(idOfComparator);
+        sortAllGroupsNotes();
+        notesAdapter.notifyDataSetChanged();
+    }
+
+    public void sortAllGroupsNotes() {
+        for (List<NoteDTO> groupsNotes : allGroupsNotes) {
+            Collections.sort(groupsNotes, comparatorForSortNotes);
+        }
+    }
+
+    public void sortGroupNotes(List<NoteDTO> sortedList) {
+        Collections.sort(sortedList, comparatorForSortNotes);
+    }
+
     private void deletingNoteOnPositionInCurrentListNotes(int positionDeletingNote) {
         dbManager.deleteNote(currentShowingNotes.get(positionDeletingNote));
         currentShowingNotes.remove(positionDeletingNote);
@@ -226,7 +263,9 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
 
     private void insertNote(NoteDTO note) {
         dbManager.insertNote(note);
-        allGroupsNotes.get(Utils.getListIdOfTypeNote(note)).add(note);
+        List<NoteDTO> listContainCurrentNote = allGroupsNotes.get(Utils.getListIdOfTypeNote(note));
+        listContainCurrentNote.add(note);
+        sortGroupNotes(listContainCurrentNote);
         notesAdapter.notifyDataSetChanged();
     }
 
@@ -234,8 +273,10 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         List<NoteDTO> updatingNoteGroupList = allGroupsNotes.get(Utils.getListIdOfTypeNote(updatingNote));
         if (currentShowingNotes == updatingNoteGroupList) {
             currentShowingNotes.set(position, updatingNote);
+            sortGroupNotes(currentShowingNotes);
         } else {
             updatingNoteGroupList.add(updatingNote);
+            sortGroupNotes(updatingNoteGroupList);
             currentShowingNotes.remove(position);
         }
         dbManager.updateNote(updatingNote);
@@ -250,6 +291,9 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
         return defaultTypesDefLang;
     }
 
+    public static ArrayList<String> getAllTypesNotes() {
+        return allTypesNotes;
+    }
 
     class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
@@ -270,7 +314,20 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
-            holder.noteDate.setText(Utils.getStringFromDateAll(noteValues.get(position).getDate()));
+            NoteDTO currentNote = noteValues.get(position);
+            holder.noteDate.setText(Utils.getStringFromDateAll(currentNote.getDate()));
+            String shortDescription = currentNote.getDescription();
+            try {
+                shortDescription = shortDescription.substring(0, 20);
+            } catch (Exception e) {/*empty*/}
+            holder.noteShortDescription.setText(shortDescription);
+            TextView typeShower = holder.itemView.findViewById(R.id.content_type);
+            if (positionCurrentShowingNotes ==0) {
+                typeShower.setVisibility(View.VISIBLE);
+                typeShower.setText(currentNote.getType());
+            } else {
+                typeShower.setVisibility(View.INVISIBLE);
+            }
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -333,17 +390,19 @@ public class ItemListActivityMain extends AppCompatActivity implements DbManager
 
         class ViewHolder extends RecyclerView.ViewHolder {
             private View mView;
+            private TextView noteShortDescription;
             private TextView noteDate;
 
             ViewHolder(View view) {
                 super(view);
                 mView = view;
-                noteDate = view.findViewById(R.id.content);
+                noteShortDescription = view.findViewById(R.id.content_short_description);
+                noteDate = view.findViewById(R.id.content_date);
             }
 
             @Override
             public String toString() {
-                return super.toString() + " '" + noteDate.getText() + "'";
+                return super.toString() + " '" + noteShortDescription.getText() + "'";
             }
         }
     }

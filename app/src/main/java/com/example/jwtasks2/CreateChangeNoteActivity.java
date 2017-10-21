@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,13 +41,14 @@ public class CreateChangeNoteActivity extends AppCompatActivity implements Dialo
 
     private void init() {
         currentNote = getIntent().getParcelableExtra(ItemListActivityMain.CURRENT_NOTE_KEY);
+        calendarDateCurrentNote.setTime(currentNote.getDate());
         btnDate = (Button) findViewById(R.id.btn_date);
         btnDate.setText(Utils.getStringFromDateStart(currentNote.getDate()));
         btnTime = (Button) findViewById(R.id.btn_time);
         btnTime.setText(Utils.getStringFromDateEnd(currentNote.getDate()));
 
         ((EditText) findViewById(R.id.output_description_activity_create)).setText(currentNote.getDescription());
-        allTypesAnotherNotes = getIntent().getExtras().getStringArrayList(ItemListActivityMain.SENT_ALL_ANOTHER_TYPES_KEY);
+        allTypesAnotherNotes = ItemListActivityMain.getAllTypesNotes();
         showerCustomTypes = (AppCompatSpinner) findViewById(R.id.types_note);
         adapterShowingCustomTypes = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, allTypesAnotherNotes);
         showerCustomTypes.setAdapter(adapterShowingCustomTypes);

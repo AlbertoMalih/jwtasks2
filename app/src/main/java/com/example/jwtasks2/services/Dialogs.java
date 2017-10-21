@@ -88,6 +88,18 @@ public class Dialogs {
         dialogFragment.show(activityThis.getFragmentManager(), activityThis.getString(R.string.time));
     }
 
+    public static void showChooseComparator(final Activity activityThis, int selectedId, final OnSelectedComparatorListener onSelectedComparatorListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activityThis);
+        builder.setTitle(activityThis.getString(R.string.choose_comparator_for_sort));
+        builder.setSingleChoiceItems(R.array.types_comparators, selectedId, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int item) {
+                onSelectedComparatorListener.onSelectedComparator(item);
+            }
+        });
+        builder.create().show();
+    }
+
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
         private Calendar date;
         private Button btnDate;
@@ -148,5 +160,9 @@ public class Dialogs {
     public interface OnDeleteTypesListener {
         void onDeleteAllTypes();
         void onDeleteTypesSimpleGroup(String group);
+    }
+
+    public interface OnSelectedComparatorListener {
+        void onSelectedComparator(int idOfComparator);
     }
 }
