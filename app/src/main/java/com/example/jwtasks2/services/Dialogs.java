@@ -8,7 +8,6 @@ import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -16,7 +15,6 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.example.jwtasks2.CreateChangeNoteActivity;
-import com.example.jwtasks2.ItemListActivityMain;
 import com.example.jwtasks2.R;
 
 import java.util.Calendar;
@@ -45,7 +43,6 @@ public class Dialogs {
                 if (nameSimpleGroupForDeleteNotes.isEmpty()){
                     return;
                 }
-                Log.d(ItemListActivityMain.TAG, " select new custom type -    " + nameSimpleGroupForDeleteNotes);
                 dbManager.deleteAllNotesInSimpleGroup(Utils.getGroupNameForWorkWithDb(nameSimpleGroupForDeleteNotes));
                 listenerTypeDelete.onDeleteTypesSimpleGroup(nameSimpleGroupForDeleteNotes);
             }
@@ -66,7 +63,6 @@ public class Dialogs {
                         if (nameNewCustomType.isEmpty()){
                             return;
                         }
-                        Log.d(ItemListActivityMain.TAG, " create new custom type -  " + nameNewCustomType);
                         listenerTypeCreate.onTypeCreated(nameNewCustomType);
                     }
                 }
@@ -113,7 +109,6 @@ public class Dialogs {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dateDay) {
             date.set(year, month, dateDay);
-            Log.d(ItemListActivityMain.TAG, date.getTime() + "  seting time and datte");
             btnDate.setText(Utils.getStringFromDateStart(date.getTime()));
         }
 
@@ -139,7 +134,6 @@ public class Dialogs {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             date.set(Calendar.HOUR_OF_DAY, hourOfDay);
             date.set(Calendar.MINUTE, minute);
-            Log.d(ItemListActivityMain.TAG, date.getTime() + "  seting time and datte");
             btnTime.setText(Utils.getStringFromDateEnd(date.getTime()));
 
         }

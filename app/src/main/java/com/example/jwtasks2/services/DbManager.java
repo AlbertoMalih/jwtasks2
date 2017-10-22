@@ -8,14 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 
-import com.example.jwtasks2.ItemListActivityMain;
 import com.example.jwtasks2.model.NoteDTO;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.jwtasks2.ItemListActivityMain.ANOTHER_DATA_LIST;
+import static com.example.jwtasks2.services.Constants.ANOTHER_DATA_LIST;
 
 public class DbManager extends SQLiteOpenHelper {
     //todo add transactions anywhere
@@ -27,14 +26,13 @@ public class DbManager extends SQLiteOpenHelper {
     private static final String NOTES_COLUMN_DATE = "date";
     private static final String NOTES_COLUMN_TYPE = "type";
 
-    private ArrayList<String> allAnotherTypesNotes;
+    private ArrayList<String> allTypesNotes;
     private String[] defaultTypes;
     private String[] defaultTypesDefLang;
 
+
     public DbManager(Context context) {
         super(context, DATABASE_NAME, null, 1);
-        defaultTypes = ItemListActivityMain.getDefaultTypes();
-        defaultTypesDefLang = ItemListActivityMain.getDefaultTypesDefLang();
     }
 
     @Override
@@ -111,10 +109,10 @@ public class DbManager extends SQLiteOpenHelper {
     }
 
     private List<List<NoteDTO>> getAllNotesInNowThread() {
-        allAnotherTypesNotes = new ArrayList<>();
+        allTypesNotes = new ArrayList<>();
         List<List<NoteDTO>> resultAllData = new ArrayList<>();
         for (int i = 0; i < defaultTypes.length; i++) {
-            allAnotherTypesNotes.add(defaultTypes[i]);
+            allTypesNotes.add(defaultTypes[i]);
             resultAllData.add(i, new ArrayList<NoteDTO>());
         }
 
@@ -141,8 +139,8 @@ public class DbManager extends SQLiteOpenHelper {
             }
             if (isCustomType) {
                 resultAllData.get(ANOTHER_DATA_LIST).add(currentNote);
-                if (!allAnotherTypesNotes.contains(currentType)) {
-                    allAnotherTypesNotes.add(currentType);
+                if (!allTypesNotes.contains(currentType)) {
+                    allTypesNotes.add(currentType);
                 }
             }
         } while (allData.moveToNext());
@@ -150,8 +148,16 @@ public class DbManager extends SQLiteOpenHelper {
         return resultAllData;
     }
 
-    public ArrayList<String> getAllAnotherTypesNotes() {
-        return allAnotherTypesNotes;
+    public ArrayList<String> getAllTypesNotes() {
+        return allTypesNotes;
+    }
+
+    public void setDefaultTypes(String[] defaultTypes) {
+        this.defaultTypes = defaultTypes;
+    }
+
+    public void setDefaultTypesDefLang(String[] defaultTypesDefLang) {
+        this.defaultTypesDefLang = defaultTypesDefLang;
     }
 
     private class RequestAllUsers extends AsyncTask<Void, Void, List<List<NoteDTO>>> {
@@ -176,4 +182,5 @@ public class DbManager extends SQLiteOpenHelper {
     public interface OnGetAllDataListener {
         void onResponseAllData(List<List<NoteDTO>> responseData);
     }
+
 }

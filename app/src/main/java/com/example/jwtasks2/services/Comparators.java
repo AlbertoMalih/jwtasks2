@@ -1,17 +1,11 @@
 package com.example.jwtasks2.services;
 
-import android.util.Log;
-
-import com.example.jwtasks2.ItemListActivityMain;
 import com.example.jwtasks2.model.NoteDTO;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class Comparators {
-    public static final int DATE_COMPARATOR_CODE = 0;
-    public static final int TYPE_COMPARATOR_CODE = 1;
-    public static final int DESCRIPTION_COMPARATOR_CODE = 2;
     private static ArrayList<Comparator<NoteDTO>> comparators = new ArrayList<>();
 
     static {

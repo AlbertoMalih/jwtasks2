@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 public class ItemDetailActivity extends AppCompatActivity {
+    public static final int CURRENT_LAYOUT = R.layout.activity_item_detail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_detail);
+        setContentView(CURRENT_LAYOUT);
         if (savedInstanceState == null) {
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(getIntent().getExtras());

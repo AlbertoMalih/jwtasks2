@@ -2,82 +2,76 @@ package com.example.jwtasks2;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jwtasks2.model.NoteDTO;
 import com.example.jwtasks2.services.Comparators;
 import com.example.jwtasks2.services.DbManager;
 import com.example.jwtasks2.services.Dialogs;
+import com.example.jwtasks2.services.ResourcesAndSettings;
 import com.example.jwtasks2.services.Utils;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.example.jwtasks2.CreateChangeNoteActivity.CREATE_NOTE_CODE;
-import static com.example.jwtasks2.CreateChangeNoteActivity.UPDATE_NOTE_CODE;
+import javax.inject.Inject;
+import butterknife.BindView;
+import static com.example.jwtasks2.services.Constants.*;
 
-public class ItemListActivityMain extends AppCompatActivity implements Dialogs.OnSelectedComparatorListener, DbManager.OnGetAllDataListener, Dialogs.OnDeleteTypesListener {
+public class ItemListActivityMain extends BaseActivity implements Dialogs.OnSelectedComparatorListener, DbManager.OnGetAllDataListener, Dialogs.OnDeleteTypesListener {
     //todo add firebase database and auth
-    public static final String SHOWING_ELEMENT = "SHOWING_ELEMENT";
-    public static final String TAG = "JWTASKS_2_TAG";
-    public static final String SENT_ALL_ANOTHER_TYPES_KEY = "SENT_ALL_ANOTHER_TYPES_KEY";
-    public static final int ANOTHER_DATA_LIST = 0;
-    public static final int REQUEST_CODE_CREATE_CHANGE_NOTE = 42;
-    public static final String CURRENT_NOTE_KEY = "CURRENT_NOTE_KEY";
-    public static final String POSITION_UPDATING_TASK = "POSITION_UPDATING_TASK";
-    public static final String CODE_WORK_WITH_NOTE = "function_code";
-    private static final String CODE_CURRENT_COMPATRATOR_FOR_PREFERENCES = "CODE_CURRENT_COMPATRATOR_FOR_PREFERENCES";
-
-    private static String[] defaultTypes;
-    private static String[] defaultTypesDefLang;
-
+    private String[] defaultTypes;
     private boolean currentMachineIsTablet;
-    private static ArrayList<String> allTypesNotes;
+    private ArrayList<String> allTypesNotes;
     private SimpleItemRecyclerViewAdapter notesAdapter;
     private List<List<NoteDTO>> allGroupsNotes;
     private List<NoteDTO> currentShowingNotes;
     private int positionCurrentShowingNotes;
-    private DbManager dbManager;
-    private TabLayout tabLayout;
-    private RecyclerView showerCurrentNotes;
-    private SharedPreferences containerOfSettings;
+    @Inject
+    DbManager dbManager;
+    @Inject
+    ResourcesAndSettings resourcesAndSettings;
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.item_list)
+    RecyclerView item_list;
     private Comparator<NoteDTO> comparatorForSortNotes;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_list);
-        initNameTypes();
-        containerOfSettings = PreferenceManager.getDefaultSharedPreferences(this);
-        comparatorForSortNotes = Comparators.getComparatorOnId(containerOfSettings.getInt(CODE_CURRENT_COMPATRATOR_FOR_PREFERENCES, Comparators.DATE_COMPARATOR_CODE));
-        dbManager = new DbManager(this.getApplicationContext());
-        showerCurrentNotes = (RecyclerView) findViewById(R.id.item_list);
-        if (findViewById(R.id.item_detail_container) != null) {
+        initDefTypes();
+        comparatorForSortNotes = resourcesAndSettings.readComparator();
+        if (findViewById((R.id.item_detail_container)) != null) {
             currentMachineIsTablet = true;
         }
         initToolbar();
         initAllGroupsNotes();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_item_list;
+    }
+
+    @Override
+    public void injectDependencies() {
+        getActivityComponent().inject(this);
     }
 
     @Override
@@ -163,14 +157,8 @@ public class ItemListActivityMain extends AppCompatActivity implements Dialogs.O
         return allGroupsNotes;
     }
 
-    private void initNameTypes() {
-        Resources resources = getResources();
-        defaultTypes = resources.getStringArray(R.array.default_types);
-        defaultTypesDefLang = resources.getStringArray(R.array.default_types_def_lang);
-    }
-
     private void initAllGroupsNotes() {
-        //with static allGroupsNotes
+        //todo with static allGroupsNotes
 //        if (allGroupsNotes != null) {
 //            onResponseAllData(allGroupsNotes);
 //            return;
@@ -179,12 +167,19 @@ public class ItemListActivityMain extends AppCompatActivity implements Dialogs.O
     }
 
     private void initToolbar() {
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        setSupportActionBar(toolbar);
 
         for (String defaultType : defaultTypes) {
             tabLayout.addTab(tabLayout.newTab().setText(defaultType));
         }
+    }
+
+    private void initDefTypes() {
+        dbManager.setDefaultTypes(defaultTypes = resourcesAndSettings.getDefaultTypes());
+        String[] defaultTypesDefLang = resourcesAndSettings.getDefaultTypesDefLang();
+        dbManager.setDefaultTypesDefLang(defaultTypesDefLang);
+        Utils.setDefaultTypesDefLang(defaultTypesDefLang);
+        Utils.setDefaultTypes(defaultTypes);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView, List<NoteDTO> data) {
@@ -194,9 +189,9 @@ public class ItemListActivityMain extends AppCompatActivity implements Dialogs.O
     @Override
     public void onResponseAllData(List<List<NoteDTO>> responseData) {
         allGroupsNotes = responseData;
-        allTypesNotes = dbManager.getAllAnotherTypesNotes();
+        allTypesNotes = dbManager.getAllTypesNotes();
         sortAllGroupsNotes();
-        setupRecyclerView(showerCurrentNotes, allGroupsNotes.get(ANOTHER_DATA_LIST));
+        setupRecyclerView(item_list, allGroupsNotes.get(ANOTHER_DATA_LIST));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -239,7 +234,7 @@ public class ItemListActivityMain extends AppCompatActivity implements Dialogs.O
 
     @Override
     public void onSelectedComparator(int idOfComparator) {
-        containerOfSettings.edit().putInt(CODE_CURRENT_COMPATRATOR_FOR_PREFERENCES, idOfComparator).apply();
+        resourcesAndSettings.writeComparator(idOfComparator);
         comparatorForSortNotes = Comparators.getComparatorOnId(idOfComparator);
         sortAllGroupsNotes();
         notesAdapter.notifyDataSetChanged();
@@ -283,18 +278,6 @@ public class ItemListActivityMain extends AppCompatActivity implements Dialogs.O
         notesAdapter.notifyDataSetChanged();
     }
 
-    public static String[] getDefaultTypes() {
-        return defaultTypes;
-    }
-
-    public static String[] getDefaultTypesDefLang() {
-        return defaultTypesDefLang;
-    }
-
-    public static ArrayList<String> getAllTypesNotes() {
-        return allTypesNotes;
-    }
-
     class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -322,7 +305,7 @@ public class ItemListActivityMain extends AppCompatActivity implements Dialogs.O
             } catch (Exception e) {/*empty*/}
             holder.noteShortDescription.setText(shortDescription);
             TextView typeShower = holder.itemView.findViewById(R.id.content_type);
-            if (positionCurrentShowingNotes ==0) {
+            if (positionCurrentShowingNotes == 0) {
                 typeShower.setVisibility(View.VISIBLE);
                 typeShower.setText(currentNote.getType());
             } else {

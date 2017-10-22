@@ -11,6 +11,7 @@
     <string name="delete_notes_from_writing_group_str">delete notes from writing group</string>
     <string name="delete_all_str">delete all</string>
     <string name="select_type_sort_str">select type sort</string>
+    <string name="description_str">description</string>
 
 
     <array name="types_comparators">
