@@ -240,5 +240,4 @@ public class ItemListActivityMain extends BaseActivity implements ContainerNotes
     public boolean isCurrentMachineIsTablet() {
         return currentMachineIsTablet;
     }
-    //// TODO  вынести activities в пакет activity
 }

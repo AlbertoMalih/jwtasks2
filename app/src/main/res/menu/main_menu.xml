@@ -5,7 +5,7 @@
     <item
         android:id="@+id/delete_all_main_menu"
         android:showAsAction="ifRoom"
-        android:title="@string/delete_all_str" />
+        android:title="@string/delete_groups_str" />
 
 
     <item

@@ -8,10 +8,11 @@
     <string name="back">back</string>
     <string name="delete_all_notes_str">delete all notes</string>
     <string name="choose_type_delete">choose type delete</string>
-    <string name="delete_notes_from_writing_group_str">delete notes from writing group</string>
-    <string name="delete_all_str">delete all</string>
+    <string name="delete_notes_from_simple_group_str">delete notes from writing group</string>
+    <string name="delete_groups_str">delete groups</string>
     <string name="select_type_sort_str">select type sort</string>
     <string name="description_str">description</string>
+    <string name="your_name_type_str">your name type</string>
 
 
     <array name="types_comparators">

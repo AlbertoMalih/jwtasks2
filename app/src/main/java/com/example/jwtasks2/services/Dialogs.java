@@ -36,7 +36,7 @@ public class Dialogs {
                 }
         );
 
-        builder.setNeutralButton(R.string.delete_notes_from_writing_group_str, new DialogInterface.OnClickListener() {
+        builder.setNeutralButton(R.string.delete_notes_from_simple_group_str, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String nameSimpleGroupForDeleteNotes = ((EditText) (Dialog.class.cast(dialogInterface).findViewById(R.id.input_name_new_custom_type))).getText().toString();
