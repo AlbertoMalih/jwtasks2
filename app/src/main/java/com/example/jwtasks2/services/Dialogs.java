@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +15,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import com.example.jwtasks2.CreateChangeNoteActivity;
+import com.example.jwtasks2.ui.activities.CreateChangeNoteActivity;
 import com.example.jwtasks2.R;
 
 import java.util.Calendar;
@@ -30,7 +31,6 @@ public class Dialogs {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                       dbManager.deleteAllNotes();
                         listenerTypeDelete.onDeleteAllTypes();
                     }
                 }
@@ -43,8 +43,7 @@ public class Dialogs {
                 if (nameSimpleGroupForDeleteNotes.isEmpty()){
                     return;
                 }
-                dbManager.deleteAllNotesInSimpleGroup(Utils.getGroupNameForWorkWithDb(nameSimpleGroupForDeleteNotes));
-                listenerTypeDelete.onDeleteTypesSimpleGroup(nameSimpleGroupForDeleteNotes);
+                listenerTypeDelete.onDeleteNotesInSimpleGroupAndType(nameSimpleGroupForDeleteNotes);
             }
         });
         builder.create().show();
@@ -84,13 +83,12 @@ public class Dialogs {
         dialogFragment.show(activityThis.getFragmentManager(), activityThis.getString(R.string.time));
     }
 
-    public static void showChooseComparator(final Activity activityThis, int selectedId, final OnSelectedComparatorListener onSelectedComparatorListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activityThis);
-        builder.setTitle(activityThis.getString(R.string.select_type_sort_str));
+    public static void showChooseComparator(final Context contextForCreateDialog, int selectedId, final OnSelectedComparatorListener getterComparatorListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(contextForCreateDialog);
+        builder.setTitle(contextForCreateDialog.getString(R.string.select_type_sort_str));
         builder.setSingleChoiceItems(R.array.types_comparators, selectedId, new DialogInterface.OnClickListener() {
-
             public void onClick(DialogInterface dialog, int item) {
-                onSelectedComparatorListener.onSelectedComparator(item);
+                    getterComparatorListener.onSelectedComparator(item);
             }
         });
         builder.create().show();
@@ -135,7 +133,6 @@ public class Dialogs {
             date.set(Calendar.HOUR_OF_DAY, hourOfDay);
             date.set(Calendar.MINUTE, minute);
             btnTime.setText(Utils.getStringFromDateEnd(date.getTime()));
-
         }
 
         public void setDate(Calendar date) {
@@ -153,7 +150,7 @@ public class Dialogs {
 
     public interface OnDeleteTypesListener {
         void onDeleteAllTypes();
-        void onDeleteTypesSimpleGroup(String group);
+        void onDeleteNotesInSimpleGroupAndType(String group);
     }
 
     public interface OnSelectedComparatorListener {

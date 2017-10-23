@@ -3,9 +3,9 @@ package com.example.jwtasks2;
 import android.app.Application;
 import android.content.Context;
 
-import com.example.jwtasks2.dagger.components.AppComponent;
-import com.example.jwtasks2.dagger.components.DaggerAppComponent;
-import com.example.jwtasks2.dagger.modules.AppModule;
+import com.example.jwtasks2.di.components.AppComponent;
+import com.example.jwtasks2.di.components.DaggerAppComponent;
+import com.example.jwtasks2.di.modules.AppModule;
 
 
 public class CurrentApplication extends Application {

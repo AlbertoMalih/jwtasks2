@@ -1,11 +1,12 @@
-package com.example.jwtasks2;
+package com.example.jwtasks2.ui.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.jwtasks2.dagger.components.ActivityComponent;
-import com.example.jwtasks2.dagger.components.DaggerActivityComponent;
+import com.example.jwtasks2.CurrentApplication;
+import com.example.jwtasks2.di.components.ActivityComponent;
+import com.example.jwtasks2.di.components.DaggerActivityComponent;
 
 import butterknife.ButterKnife;
 

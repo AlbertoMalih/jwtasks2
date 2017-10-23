@@ -1,4 +1,4 @@
-package com.example.jwtasks2;
+package com.example.jwtasks2.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.jwtasks2.R;
 import com.example.jwtasks2.model.NoteDTO;
 import com.example.jwtasks2.services.Utils;
 

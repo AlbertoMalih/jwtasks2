@@ -1,4 +1,4 @@
-package com.example.jwtasks2;
+package com.example.jwtasks2.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,8 +9,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.jwtasks2.R;
 import com.example.jwtasks2.model.NoteDTO;
-import com.example.jwtasks2.services.DbManager;
+import com.example.jwtasks2.services.ContainerNotes;
 import com.example.jwtasks2.services.Dialogs;
 import com.example.jwtasks2.services.Utils;
 
@@ -39,7 +40,7 @@ public class CreateChangeNoteActivity extends BaseActivity implements Dialogs.On
     @BindView(R.id.output_description_activity_create)
     EditText output_description_activity_create;
     @Inject
-    DbManager dbManager;
+    ContainerNotes containerNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,7 @@ public class CreateChangeNoteActivity extends BaseActivity implements Dialogs.On
 
     private void init() {
         currentNote = getIntent().getParcelableExtra(CURRENT_NOTE_KEY);
-        allTypesNotes = dbManager.getAllTypesNotes();
+        allTypesNotes = containerNotes.getAllTypesNotes();
         calendarDateCurrentNote.setTime(currentNote.getDate());
         btn_date.setText(Utils.getStringFromDateStart(currentNote.getDate()));
         btn_time.setText(Utils.getStringFromDateEnd(currentNote.getDate()));

@@ -12,7 +12,7 @@ import java.util.Comparator;
 
 import static com.example.jwtasks2.services.Constants.DATE_COMPARATOR_CODE;
 
-public class ResourcesAndSettings {
+public class ResourcesAndSettings{
     private static final String CODE_CURRENT_COMPARATOR_FOR_PREFERENCES = "CODE_CURRENT_COMPARATOR_FOR_PREFERENCES";
 
     private Context context;
@@ -28,12 +28,12 @@ public class ResourcesAndSettings {
         defaultTypesDefLang = resources.getStringArray(R.array.default_types_def_lang);
     }
 
-    public void writeComparator(int idOfComparator){
-        containerOfSettings.edit().putInt(CODE_CURRENT_COMPARATOR_FOR_PREFERENCES, idOfComparator).apply();
-    }
-
     public Comparator<NoteDTO> readComparator(){
         return  Comparators.getComparatorOnId(containerOfSettings.getInt(CODE_CURRENT_COMPARATOR_FOR_PREFERENCES, DATE_COMPARATOR_CODE));
+    }
+
+    public void writeComparator(int idOfComparator){
+        containerOfSettings.edit().putInt(CODE_CURRENT_COMPARATOR_FOR_PREFERENCES, idOfComparator).apply();
     }
 
 

@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ItemListActivityMain"
+            android:name=".ui.activities.ItemListActivityMain"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -21,15 +21,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ItemDetailActivity"
+            android:name=".ui.activities.ItemDetailActivity"
             android:label="@string/title_item_detail"
-            android:parentActivityName=".ItemListActivityMain"
+            android:parentActivityName=".ui.activities.ItemListActivityMain"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-date
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.jwtasks2.ItemListActivityMain" />
+                android:value="com.example.jwtasks2.ui.activities.ItemListActivityMain" />
         </activity>
-        <activity android:name=".CreateChangeNoteActivity"></activity>
+        <activity android:name=".ui.activities.CreateChangeNoteActivity"></activity>
     </application>
 
 </manifest>

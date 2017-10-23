@@ -1,11 +1,13 @@
-package com.example.jwtasks2.dagger.components;
+package com.example.jwtasks2.di.components;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.jwtasks2.CurrentApplication;
-import com.example.jwtasks2.dagger.modules.AppModule;
+import com.example.jwtasks2.di.modules.AppModule;
+import com.example.jwtasks2.services.ContainerNotes;
 import com.example.jwtasks2.services.DbManager;
+import com.example.jwtasks2.services.ResourcesAndSettings;
 
 import javax.inject.Singleton;
 
@@ -19,6 +21,10 @@ public interface AppComponent {
     SharedPreferences sharedPreferences();
 
     DbManager dbManager();
+
+    ContainerNotes containerNotes();
+
+    ResourcesAndSettings resourcesAndSettings();
 
     Context getApplicationContext();
 }

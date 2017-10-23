@@ -1,4 +1,4 @@
-package com.example.jwtasks2.dagger;
+package com.example.jwtasks2.di;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

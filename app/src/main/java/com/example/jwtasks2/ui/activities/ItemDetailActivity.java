@@ -1,9 +1,12 @@
-package com.example.jwtasks2;
+package com.example.jwtasks2.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import com.example.jwtasks2.ui.fragments.ItemDetailFragment;
+import com.example.jwtasks2.R;
 
 public class ItemDetailActivity extends AppCompatActivity {
     public static final int CURRENT_LAYOUT = R.layout.activity_item_detail;

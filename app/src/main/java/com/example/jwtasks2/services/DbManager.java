@@ -10,11 +10,9 @@ import android.os.AsyncTask;
 
 import com.example.jwtasks2.model.NoteDTO;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import static com.example.jwtasks2.services.Constants.ANOTHER_DATA_LIST;
+import io.reactivex.Observer;
 
 public class DbManager extends SQLiteOpenHelper {
     //todo add transactions anywhere
@@ -25,11 +23,6 @@ public class DbManager extends SQLiteOpenHelper {
     private static final String NOTES_COLUMN_DESCRIPTION = "description";
     private static final String NOTES_COLUMN_DATE = "date";
     private static final String NOTES_COLUMN_TYPE = "type";
-
-    private ArrayList<String> allTypesNotes;
-    private String[] defaultTypes;
-    private String[] defaultTypesDefLang;
-
 
     public DbManager(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -60,13 +53,6 @@ public class DbManager extends SQLiteOpenHelper {
         db.close();
         return true;
     }
-//
-//    public long numberOfRows() {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        long numRows = DatabaseUtils.queryNumEntries(db, NOTES_TABLE_NAME);
-//        db.close();
-//        return numRows;
-//    }
 
     public boolean updateNote(NoteDTO note) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -103,84 +89,47 @@ public class DbManager extends SQLiteOpenHelper {
         return sizeDeletingElements;
     }
 
-    public void installAllNotesInListener(OnGetAllDataListener onGetAllDataListener) {
-        RequestAllUsers requestAllUsers = new RequestAllUsers(onGetAllDataListener);
-        requestAllUsers.execute();
+    public void installAllNotesInListener(Observer<NoteDTO> getterNotes) {
+        new RequestAllUsers(getterNotes).execute();
     }
 
-    private List<List<NoteDTO>> getAllNotesInNowThread() {
-        allTypesNotes = new ArrayList<>();
-        List<List<NoteDTO>> resultAllData = new ArrayList<>();
-        for (int i = 0; i < defaultTypes.length; i++) {
-            allTypesNotes.add(defaultTypes[i]);
-            resultAllData.add(i, new ArrayList<NoteDTO>());
-        }
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor allData = db.rawQuery("select * from " + NOTES_TABLE_NAME, null);
-        if (!allData.moveToFirst()) {
-            return resultAllData;
-        }
-        int descriptionIndex = allData.getColumnIndex(NOTES_COLUMN_DESCRIPTION);
-        int dateIndex = allData.getColumnIndex(NOTES_COLUMN_DATE);
-        int typeIndex = allData.getColumnIndex(NOTES_COLUMN_TYPE);
-        int idIndex = allData.getColumnIndex(NOTES_COLUMN_ID);
-        do {
-            NoteDTO currentNote = new NoteDTO(allData.getString(descriptionIndex), new Date(allData.getLong(dateIndex)), allData.getString(typeIndex), allData.getLong(idIndex));
-            String currentType = currentNote.getType();
-            boolean isCustomType = true;
-            for (int i = 0; i < defaultTypesDefLang.length; i++) {
-                if (defaultTypesDefLang[i].equals(currentType)) {
-                    isCustomType = false;
-                    currentNote.setType(defaultTypes[i]);
-                    resultAllData.get(i).add(currentNote);
-                    break;
-                }
-            }
-            if (isCustomType) {
-                resultAllData.get(ANOTHER_DATA_LIST).add(currentNote);
-                if (!allTypesNotes.contains(currentType)) {
-                    allTypesNotes.add(currentType);
-                }
-            }
-        } while (allData.moveToNext());
-        allData.close();
-        return resultAllData;
-    }
+    private class RequestAllUsers extends AsyncTask<Void, NoteDTO, Void> {
+        private Observer<NoteDTO> getterNotes;
 
-    public ArrayList<String> getAllTypesNotes() {
-        return allTypesNotes;
-    }
-
-    public void setDefaultTypes(String[] defaultTypes) {
-        this.defaultTypes = defaultTypes;
-    }
-
-    public void setDefaultTypesDefLang(String[] defaultTypesDefLang) {
-        this.defaultTypesDefLang = defaultTypesDefLang;
-    }
-
-    private class RequestAllUsers extends AsyncTask<Void, Void, List<List<NoteDTO>>> {
-        private OnGetAllDataListener onGetAllDataListener;
-
-        RequestAllUsers(OnGetAllDataListener onGetAllDataListener) {
-            this.onGetAllDataListener = onGetAllDataListener;
+        RequestAllUsers( Observer<NoteDTO> getterNotes) {
+            this.getterNotes = getterNotes;
         }
 
         @Override
-        protected List<List<NoteDTO>> doInBackground(Void... voids) {
-            return DbManager.this.getAllNotesInNowThread();
+        protected Void doInBackground(Void... voids) {
+            SQLiteDatabase db = DbManager.this.getReadableDatabase();
+            Cursor allData = db.rawQuery("select * from " + NOTES_TABLE_NAME, null);
+            if (!allData.moveToFirst()) {
+                return null;
+            }
+            int descriptionIndex = allData.getColumnIndex(NOTES_COLUMN_DESCRIPTION);
+            int dateIndex = allData.getColumnIndex(NOTES_COLUMN_DATE);
+            int typeIndex = allData.getColumnIndex(NOTES_COLUMN_TYPE);
+            int idIndex = allData.getColumnIndex(NOTES_COLUMN_ID);
+            do {
+                NoteDTO currentNote = new NoteDTO(allData.getString(descriptionIndex), new Date(allData.getLong(dateIndex)), allData.getString(typeIndex), allData.getLong(idIndex));
+                publishProgress(currentNote);
+            } while (allData.moveToNext());
+            allData.close();
+            return null;
         }
 
         @Override
-        protected void onPostExecute(List<List<NoteDTO>> lists) {
-            super.onPostExecute(lists);
-            onGetAllDataListener.onResponseAllData(lists);
+        protected void onProgressUpdate(NoteDTO... values) {
+            super.onProgressUpdate(values);
+            getterNotes.onNext(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            super.onPostExecute(v);
+            getterNotes.onComplete();
         }
     }
-
-    public interface OnGetAllDataListener {
-        void onResponseAllData(List<List<NoteDTO>> responseData);
-    }
-
 }
