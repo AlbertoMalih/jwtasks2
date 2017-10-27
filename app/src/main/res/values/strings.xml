@@ -13,6 +13,8 @@
     <string name="select_type_sort_str">select type sort</string>
     <string name="description_str">description</string>
     <string name="your_name_type_str">your name type</string>
+    <string name="delete_str">delete</string>
+    <string name="edit_str">edit</string>
 
 
     <array name="types_comparators">

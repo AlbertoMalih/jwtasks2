@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/menu_item_delete_note"
-        android:title="delete" />
+        android:title="@string/delete_str" />
     <item android:id="@+id/menu_item_edit_note"
-        android:title="edit"/>
+        android:title="@string/edit_str"/>
 
 </menu>

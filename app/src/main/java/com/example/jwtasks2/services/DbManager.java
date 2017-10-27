@@ -12,6 +12,9 @@ import com.example.jwtasks2.model.NoteDTO;
 
 import java.util.Date;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 
 public class DbManager extends SQLiteOpenHelper {
@@ -90,15 +93,20 @@ public class DbManager extends SQLiteOpenHelper {
     }
 
     public void installAllNotesInListener(Observer<NoteDTO> getterNotes) {
-        new RequestAllUsers(getterNotes).execute();
+        Observable.create(new ObservableOnSubscribe<NoteDTO>() {
+            @Override
+            public void subscribe(ObservableEmitter<NoteDTO> e) throws Exception {
+                new RequestAllUsers(e).execute();
+            }
+        }).subscribe(getterNotes);
     }
 
 
     private class RequestAllUsers extends AsyncTask<Void, NoteDTO, Void> {
-        private Observer<NoteDTO> getterNotes;
+        private ObservableEmitter<NoteDTO> senderNotes;
 
-        RequestAllUsers( Observer<NoteDTO> getterNotes) {
-            this.getterNotes = getterNotes;
+        RequestAllUsers(ObservableEmitter<NoteDTO> e) {
+            this.senderNotes = e;
         }
 
         @Override
@@ -123,13 +131,13 @@ public class DbManager extends SQLiteOpenHelper {
         @Override
         protected void onProgressUpdate(NoteDTO... values) {
             super.onProgressUpdate(values);
-            getterNotes.onNext(values[0]);
+            senderNotes.onNext(values[0]);
         }
 
         @Override
         protected void onPostExecute(Void v) {
             super.onPostExecute(v);
-            getterNotes.onComplete();
+            senderNotes.onComplete();
         }
     }
 }
